@@ -75,3 +75,42 @@ Paso 6: Crear usuario superadministrador:
 ```bash
 docker compose exec netbox /opt/netbox/netbox/manage.py createsuperuser
 ```
+
+-----------------------------------------------------------------------
+--------------------⚠️ Updating Netbox in Docker ⚠️-------------------
+-----------------------------------------------------------------------
+
+Importante realizar un backup de la base de datos antes de ejecutar ninguna otra cosa.
+
+```bash
+docker compose exec -T postgres sh -c 'pg_dump -cU $POSTGRES_USER $POSTGRES_DB' | gzip > db_dump.sql.gz
+```
+En caso que haga falta, se restaura la bd de la siguiente manera, deben coincidir los nombres de los containers de posgres:
+
+```bash
+gunzip -c db_dump.sql.gz | docker compose exec -T postgres sh -c 'psql -U $POSTGRES_USER $POSTGRES_DB'
+```
+Despues de realizar una copia de seguridad ir a la carpeta de tu proyecto donde el fichero docker-composer.yml
+
+```bash
+docker compose down
+```
+Luego, para actualizar a la última versión, obtenga todas las actualizaciones de los archivos del proyecto
+
+```bash
+git checkout release &&
+git pull -p origin release
+```
+Decargar el ultimo contenedor de NetBox:
+
+```bash
+docker compose pull
+```
+
+Y poner en marcha todos los nuevos contenedores
+
+```bash
+docker compose up -d
+```
+
+
